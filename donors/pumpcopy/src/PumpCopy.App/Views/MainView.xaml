@@ -1,0 +1,113 @@
+<UserControl x:Class="PumpCopy.App.Views.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="34"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- stats strip -->
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <TextBlock Text="copied:" Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding Copied}" Foreground="{StaticResource Accent}" FontWeight="SemiBold" Margin="6,0,24,0" VerticalAlignment="Center"/>
+            <TextBlock Text="skipped:" Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding Skipped}" Foreground="{StaticResource Amber}" Margin="6,0,24,0" VerticalAlignment="Center"/>
+            <TextBlock Text="errors:" Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding Errors}" Foreground="{StaticResource Red}" Margin="6,0,24,0" VerticalAlignment="Center"/>
+            <TextBlock Text="session pnl:" Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding Pnl, StringFormat={}{0:+0.####;-0.####;0} SOL}" Foreground="{StaticResource Accent}" Margin="6,0,0,0" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- leaders -->
+            <Border Style="{StaticResource PanelBox}" Margin="0,0,6,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="34"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Margin="10,0">
+                        <TextBlock Text="Leaders" Foreground="{StaticResource Accent}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <Button Content="add" Padding="10,2" Margin="18,0,0,0" VerticalAlignment="Center" Command="{Binding AddLeaderCommand}"/>
+                        <Button Content="remove" Padding="10,2" Margin="8,0,0,0" VerticalAlignment="Center" Command="{Binding RemoveLeaderCommand}"/>
+                    </StackPanel>
+                    <DataGrid x:Name="LeadersGrid" Grid.Row="1" Margin="6,0,6,6" ItemsSource="{Binding Leaders}"
+                              SelectedItem="{Binding SelectedLeader}">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="on" Width="34">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="alias" Binding="{Binding Alias}" Width="90"/>
+                            <DataGridTextColumn Header="wallet" Binding="{Binding ShortAddress}" Width="*"/>
+                            <DataGridTextColumn Header="copied" Binding="{Binding Copied}" Width="52"/>
+                            <DataGridTextColumn Header="last" Binding="{Binding Last}" Width="70"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- live feed -->
+            <Border Grid.Column="1" Style="{StaticResource PanelBox}" Margin="6,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="34"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Live feed" Foreground="{StaticResource Accent}" FontWeight="SemiBold" Margin="10,0" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Text="feed is empty — press START: paper mode + demo feed show the whole find/copy/sell pipeline without funds"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20"
+                               TextWrapping="Wrap" TextAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource MutedText}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Items.Count, ElementName=FeedGrid}" Value="0">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <DataGrid x:Name="FeedGrid" Grid.Row="1" Margin="6,0,6,6" ItemsSource="{Binding Feed}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="time" Binding="{Binding Time}" Width="64"/>
+                            <DataGridTextColumn Header="leader" Binding="{Binding Leader}" Width="80"/>
+                            <DataGridTemplateColumn Header="side" Width="46">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Side}" FontWeight="SemiBold">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{StaticResource Red}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsBuy}" Value="True">
+                                                            <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="mint" Binding="{Binding Mint}" Width="100"/>
+                            <DataGridTextColumn Header="leader SOL" Binding="{Binding LeaderSol}" Width="76"/>
+                            <DataGridTextColumn Header="our SOL" Binding="{Binding OurSol}" Width="66"/>
+                            <DataGridTextColumn Header="status" Binding="{Binding Status}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

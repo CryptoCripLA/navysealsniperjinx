@@ -1,0 +1,9 @@
+data/
+.venv/
+__pycache__/
+*.db
+*.db-wal
+*.db-shm
+*.egg-info/
+build/
+dist/

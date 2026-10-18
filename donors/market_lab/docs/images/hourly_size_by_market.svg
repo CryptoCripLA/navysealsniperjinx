@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-label="Hourly parquet size by market">
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#24292f}
+.title{font-size:22px;font-weight:700}
+.axis{font-size:12px;fill:#57606a}
+.label{font-size:13px;fill:#24292f}
+.grid{stroke:#d0d7de;stroke-width:1}
+</style>
+<rect width="980" height="420" fill="#ffffff"/>
+<text class="title" x="28" y="36">Hourly parquet size by market</text>
+<line class="grid" x1="72" y1="356.0" x2="952" y2="356.0"/>
+<text class="axis" x="12" y="360.0">0</text>
+<line class="grid" x1="72" y1="283.0" x2="952" y2="283.0"/>
+<text class="axis" x="12" y="287.0">24</text>
+<line class="grid" x1="72" y1="210.0" x2="952" y2="210.0"/>
+<text class="axis" x="12" y="214.0">48</text>
+<line class="grid" x1="72" y1="137.0" x2="952" y2="137.0"/>
+<text class="axis" x="12" y="141.0">72</text>
+<line class="grid" x1="72" y1="64.0" x2="952" y2="64.0"/>
+<text class="axis" x="12" y="68.0">96</text>
+<rect x="78.6" y="287.9" width="11.7" height="68.1" rx="2" fill="#2f80ed"/>
+<rect x="93.3" y="79.3" width="11.7" height="276.7" rx="2" fill="#27ae60"/>
+<text class="axis" x="80.0" y="386">00</text>
+<rect x="115.3" y="297.2" width="11.7" height="58.8" rx="2" fill="#2f80ed"/>
+<rect x="130.0" y="84.5" width="11.7" height="271.5" rx="2" fill="#27ae60"/>
+<rect x="151.9" y="296.6" width="11.7" height="59.4" rx="2" fill="#2f80ed"/>
+<rect x="166.7" y="96.1" width="11.7" height="259.9" rx="2" fill="#27ae60"/>
+<rect x="188.6" y="290.2" width="11.7" height="65.8" rx="2" fill="#2f80ed"/>
+<rect x="203.3" y="101.9" width="11.7" height="254.1" rx="2" fill="#27ae60"/>
+<text class="axis" x="190.0" y="386">03</text>
+<rect x="225.3" y="287.5" width="11.7" height="68.5" rx="2" fill="#2f80ed"/>
+<rect x="240.0" y="109.7" width="11.7" height="246.3" rx="2" fill="#27ae60"/>
+<rect x="261.9" y="290.7" width="11.7" height="65.3" rx="2" fill="#2f80ed"/>
+<rect x="276.7" y="128.7" width="11.7" height="227.3" rx="2" fill="#27ae60"/>
+<rect x="298.6" y="297.8" width="11.7" height="58.2" rx="2" fill="#2f80ed"/>
+<rect x="313.3" y="144.2" width="11.7" height="211.8" rx="2" fill="#27ae60"/>
+<text class="axis" x="300.0" y="386">06</text>
+<rect x="335.3" y="301.8" width="11.7" height="54.2" rx="2" fill="#2f80ed"/>
+<rect x="350.0" y="143.8" width="11.7" height="212.2" rx="2" fill="#27ae60"/>
+<rect x="371.9" y="307.1" width="11.7" height="48.9" rx="2" fill="#2f80ed"/>
+<rect x="386.7" y="124.4" width="11.7" height="231.6" rx="2" fill="#27ae60"/>
+<rect x="408.6" y="303.7" width="11.7" height="52.3" rx="2" fill="#2f80ed"/>
+<rect x="423.3" y="108.8" width="11.7" height="247.2" rx="2" fill="#27ae60"/>
+<text class="axis" x="410.0" y="386">09</text>
+<rect x="445.3" y="315.7" width="11.7" height="40.3" rx="2" fill="#2f80ed"/>
+<rect x="460.0" y="102.9" width="11.7" height="253.1" rx="2" fill="#27ae60"/>
+<rect x="481.9" y="312.5" width="11.7" height="43.5" rx="2" fill="#2f80ed"/>
+<rect x="496.7" y="124.6" width="11.7" height="231.4" rx="2" fill="#27ae60"/>
+<rect x="518.6" y="310.7" width="11.7" height="45.3" rx="2" fill="#2f80ed"/>
+<rect x="533.3" y="143.9" width="11.7" height="212.1" rx="2" fill="#27ae60"/>
+<text class="axis" x="520.0" y="386">12</text>
+<rect x="555.3" y="308.1" width="11.7" height="47.9" rx="2" fill="#2f80ed"/>
+<rect x="570.0" y="146.4" width="11.7" height="209.6" rx="2" fill="#27ae60"/>
+<rect x="591.9" y="311.4" width="11.7" height="44.6" rx="2" fill="#2f80ed"/>
+<rect x="606.7" y="140.4" width="11.7" height="215.6" rx="2" fill="#27ae60"/>
+<rect x="628.6" y="316.9" width="11.7" height="39.1" rx="2" fill="#2f80ed"/>
+<rect x="643.3" y="118.4" width="11.7" height="237.6" rx="2" fill="#27ae60"/>
+<text class="axis" x="630.0" y="386">15</text>
+<rect x="665.3" y="322.7" width="11.7" height="33.3" rx="2" fill="#2f80ed"/>
+<rect x="680.0" y="129.1" width="11.7" height="226.9" rx="2" fill="#27ae60"/>
+<rect x="701.9" y="319.6" width="11.7" height="36.4" rx="2" fill="#2f80ed"/>
+<rect x="716.7" y="100.1" width="11.7" height="255.9" rx="2" fill="#27ae60"/>
+<rect x="738.6" y="313.9" width="11.7" height="42.1" rx="2" fill="#2f80ed"/>
+<rect x="753.3" y="135.1" width="11.7" height="220.9" rx="2" fill="#27ae60"/>
+<text class="axis" x="740.0" y="386">18</text>
+<rect x="775.3" y="315.7" width="11.7" height="40.3" rx="2" fill="#2f80ed"/>
+<rect x="790.0" y="169.5" width="11.7" height="186.5" rx="2" fill="#27ae60"/>
+<rect x="811.9" y="309.0" width="11.7" height="47.0" rx="2" fill="#2f80ed"/>
+<rect x="826.7" y="131.2" width="11.7" height="224.8" rx="2" fill="#27ae60"/>
+<rect x="848.6" y="292.9" width="11.7" height="63.1" rx="2" fill="#2f80ed"/>
+<rect x="863.3" y="91.3" width="11.7" height="264.7" rx="2" fill="#27ae60"/>
+<text class="axis" x="850.0" y="386">21</text>
+<rect x="885.3" y="295.7" width="11.7" height="60.3" rx="2" fill="#2f80ed"/>
+<rect x="900.0" y="81.6" width="11.7" height="274.4" rx="2" fill="#27ae60"/>
+<rect x="921.9" y="291.9" width="11.7" height="64.1" rx="2" fill="#2f80ed"/>
+<rect x="936.7" y="64.0" width="11.7" height="292.0" rx="2" fill="#27ae60"/>
+<text class="axis" x="442.0" y="408">Beijing hour</text>
+<text class="axis" x="20" y="54">MiB</text>
+<rect x="760" y="22" width="14" height="14" fill="#2f80ed"/>
+<text class="label" x="780" y="34">pump_fun</text>
+<rect x="860" y="22" width="14" height="14" fill="#27ae60"/>
+<text class="label" x="880" y="34">pump_amm</text>
+</svg>

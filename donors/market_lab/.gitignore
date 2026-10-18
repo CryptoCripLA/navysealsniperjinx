@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Full raw data is prepared for releases, not committed into Git history.
+release_assets/
+release_assets/full_day_raw/
+release_assets/*.zip
+release_assets/*.tar
+release_assets/*.tar.gz
+release_assets/*.7z

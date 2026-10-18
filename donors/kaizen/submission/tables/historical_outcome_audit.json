@@ -1,0 +1,382 @@
+{
+  "hypothesis": "Prior creator-fee-earning launches add independent point-in-time quality signal beyond generic wallet activity.",
+  "june_reporting_only": {
+    "baseline": {
+      "f1": 0.1342937998456393,
+      "positives": 4195,
+      "pr_auc": 0.06807276077423226,
+      "pr_auc_lift_over_prevalence": 13.826851542023872,
+      "precision": 0.14585079631181894,
+      "precision_lift_over_prevalence": 29.625026000897165,
+      "predicted_entries": 3579,
+      "predicted_entry_rate": 0.004200295041680212,
+      "prevalence": 0.004923229309820757,
+      "recall": 0.12443384982121573,
+      "roc_auc": 0.8964448778480132,
+      "rows": 852083,
+      "threshold": 0.10639753285152861,
+      "top_k": {
+        "k": 4195,
+        "lift_at_k": 27.937901611118292,
+        "positives_at_k": 577,
+        "precision_at_k": 0.13754469606674613,
+        "recall_at_k": 0.13754469606674613
+      },
+      "true_positives": 522
+    },
+    "combined": {
+      "f1": 0.13586291309669524,
+      "positives": 4195,
+      "pr_auc": 0.06379050047435818,
+      "pr_auc_lift_over_prevalence": 12.957044342238984,
+      "precision": 0.11873774291317525,
+      "precision_lift_over_prevalence": 24.11785749575378,
+      "predicted_entries": 5609,
+      "predicted_entry_rate": 0.006582692061688826,
+      "prevalence": 0.004923229309820757,
+      "recall": 0.15876042908224075,
+      "roc_auc": 0.8986795712578315,
+      "rows": 852083,
+      "threshold": 0.09954174670251179,
+      "top_k": {
+        "k": 4195,
+        "lift_at_k": 24.064362392938982,
+        "positives_at_k": 497,
+        "precision_at_k": 0.11847437425506556,
+        "recall_at_k": 0.11847437425506556
+      },
+      "true_positives": 666
+    }
+  },
+  "pre_june_decision": {
+    "april_pr_auc_delta": 0.010368185315599826,
+    "may_pr_auc_delta": 0.005389702834191684,
+    "rule": "KEEP requires >=0.002 May PR-AUC gain and no material (>0.0005) April regression.",
+    "status": "KEEP"
+  },
+  "success_proxy": "A Pump creator-fee claim is an observed prior economic outcome, not full token ROI or migration.",
+  "temporal_audit": {
+    "duplicate_keys": 0,
+    "future_launches": 0,
+    "future_states": 0,
+    "incomplete_launch_histories": 1439,
+    "invalid_1d_fractions": 0,
+    "invalid_7d_fractions": 0,
+    "invalid_bounded_fractions": 0,
+    "invalid_claim_recencies": 0,
+    "rows": 5076421,
+    "tokens": 5076421
+  },
+  "windows": {
+    "april": {
+      "baseline": {
+        "f1": 0.19490586932447398,
+        "positives": 3410,
+        "pr_auc": 0.09704810421090208,
+        "pr_auc_lift_over_prevalence": 22.867237038276222,
+        "precision": 0.14839797639123103,
+        "precision_lift_over_prevalence": 34.96669749224827,
+        "predicted_entries": 6523,
+        "predicted_entry_rate": 0.008118323665106392,
+        "prevalence": 0.004243980330831335,
+        "recall": 0.2838709677419355,
+        "roc_auc": 0.9060151506800699,
+        "rows": 803491,
+        "threshold": 0.06416728580061928,
+        "top_k": {
+          "k": 3410,
+          "lift_at_k": 42.01224000481592,
+          "positives_at_k": 608,
+          "precision_at_k": 0.17829912023460412,
+          "recall_at_k": 0.17829912023460412
+        },
+        "true_positives": 968
+      },
+      "baseline_plus_historical_outcomes": {
+        "f1": 0.21018396178473422,
+        "positives": 3410,
+        "pr_auc": 0.10741628952650191,
+        "pr_auc_lift_over_prevalence": 25.310270348369073,
+        "precision": 0.16083372219629802,
+        "precision_lift_over_prevalence": 37.89690565431838,
+        "predicted_entries": 6429,
+        "predicted_entry_rate": 0.008001334177980836,
+        "prevalence": 0.004243980330831335,
+        "recall": 0.3032258064516129,
+        "roc_auc": 0.9150491540590753,
+        "rows": 803491,
+        "threshold": 0.07737718504163636,
+        "top_k": {
+          "k": 3410,
+          "lift_at_k": 45.12169855780394,
+          "positives_at_k": 653,
+          "precision_at_k": 0.19149560117302053,
+          "recall_at_k": 0.19149560117302053
+        },
+        "true_positives": 1034
+      },
+      "combined_minus_baseline": {
+        "f1": 0.01527809246026024,
+        "pr_auc": 0.010368185315599826,
+        "precision": 0.012435745805066983,
+        "recall": 0.019354838709677413
+      },
+      "daily_pr_auc_stability": {
+        "days": 30,
+        "max_daily_delta": 0.04793849401574533,
+        "mean_daily_delta": 0.011727706018569924,
+        "median_daily_delta": 0.013545043736111102,
+        "min_daily_delta": -0.0280573861618664,
+        "positive_delta_days": 21,
+        "positive_delta_share": 0.7,
+        "q25_daily_delta": -0.0020877266489159954,
+        "q75_daily_delta": 0.027578288351241233
+      },
+      "historical_outcomes_only": {
+        "f1": 0.09859025154335208,
+        "positives": 3410,
+        "pr_auc": 0.03394680710727644,
+        "pr_auc_lift_over_prevalence": 7.998813486637141,
+        "precision": 0.07187961843342738,
+        "precision_lift_over_prevalence": 16.936840614279472,
+        "predicted_entries": 7443,
+        "predicted_entry_rate": 0.009263327156122471,
+        "prevalence": 0.004243980330831335,
+        "recall": 0.15689149560117302,
+        "roc_auc": 0.781749910504846,
+        "rows": 803491,
+        "threshold": 0.050802414062481385,
+        "top_k": {
+          "k": 3410,
+          "lift_at_k": 20.7297236865868,
+          "positives_at_k": 300,
+          "precision_at_k": 0.08797653958944282,
+          "recall_at_k": 0.08797653958944282
+        },
+        "true_positives": 535
+      },
+      "quality_feature_gain_top15": [
+        {
+          "feature": "hist_mature_7d_launch_count",
+          "gain": 174
+        },
+        {
+          "feature": "seconds_since_claim_fee",
+          "gain": 154
+        },
+        {
+          "feature": "hist_mature_1d_launch_count",
+          "gain": 105
+        },
+        {
+          "feature": "hist_claimed_launch_per_core_deploy",
+          "gain": 99
+        },
+        {
+          "feature": "hist_claim_fee_usd_per_claimed_launch",
+          "gain": 92
+        },
+        {
+          "feature": "hist_pump_launch_count",
+          "gain": 90
+        },
+        {
+          "feature": "hist_claimed_launch_fraction",
+          "gain": 81
+        },
+        {
+          "feature": "hist_claim_fee_usd_max",
+          "gain": 74
+        },
+        {
+          "feature": "hist_decayed_30d_success_fraction",
+          "gain": 59
+        },
+        {
+          "feature": "hist_claim_fee_usd_7d",
+          "gain": 49
+        },
+        {
+          "feature": "hist_mature_1d_success_fraction",
+          "gain": 46
+        },
+        {
+          "feature": "hist_claim_fee_sol_sum",
+          "gain": 43
+        },
+        {
+          "feature": "hist_claim_event_count",
+          "gain": 42
+        },
+        {
+          "feature": "hist_claimed_launch_count_7d",
+          "gain": 37
+        },
+        {
+          "feature": "hist_mature_7d_success_fraction",
+          "gain": 32
+        }
+      ],
+      "quality_group_permutation_pr_auc_drop": 0.033194024278740894,
+      "train_positives": 3245,
+      "train_rows": 246416,
+      "validation_positives": 3410,
+      "validation_rows": 803491
+    },
+    "may": {
+      "baseline": {
+        "f1": 0.24315068493150685,
+        "positives": 5077,
+        "pr_auc": 0.14534158550231874,
+        "pr_auc_lift_over_prevalence": 25.502653157060987,
+        "precision": 0.22412360857285263,
+        "precision_lift_over_prevalence": 39.32629903539324,
+        "predicted_entries": 6019,
+        "predicted_entry_rate": 0.006756498878594056,
+        "prevalence": 0.005699077057089553,
+        "recall": 0.26570809533188894,
+        "roc_auc": 0.9241306435976511,
+        "rows": 890846,
+        "threshold": 0.10639753285152861,
+        "top_k": {
+          "k": 5077,
+          "lift_at_k": 42.33742069975441,
+          "positives_at_k": 1225,
+          "precision_at_k": 0.24128422296631868,
+          "recall_at_k": 0.24128422296631868
+        },
+        "true_positives": 1349
+      },
+      "baseline_plus_historical_outcomes": {
+        "f1": 0.24852366297928968,
+        "positives": 5077,
+        "pr_auc": 0.15073128833651042,
+        "pr_auc_lift_over_prevalence": 26.448368187793374,
+        "precision": 0.21508782032824647,
+        "precision_lift_over_prevalence": 37.7408163065072,
+        "predicted_entries": 6946,
+        "predicted_entry_rate": 0.0077970827730045374,
+        "prevalence": 0.005699077057089553,
+        "recall": 0.29426826866259603,
+        "roc_auc": 0.92555404185211,
+        "rows": 890846,
+        "threshold": 0.09954174670251179,
+        "top_k": {
+          "k": 5077,
+          "lift_at_k": 42.164614900979906,
+          "positives_at_k": 1220,
+          "precision_at_k": 0.24029938940319087,
+          "recall_at_k": 0.24029938940319087
+        },
+        "true_positives": 1494
+      },
+      "combined_minus_baseline": {
+        "f1": 0.005372978047782834,
+        "pr_auc": 0.005389702834191684,
+        "precision": -0.009035788244606158,
+        "recall": 0.028560173330707095
+      },
+      "daily_pr_auc_stability": {
+        "days": 31,
+        "max_daily_delta": 0.04829209258500128,
+        "mean_daily_delta": 0.003923789783756531,
+        "median_daily_delta": 0.007964730442011736,
+        "min_daily_delta": -0.07016429700258078,
+        "positive_delta_days": 19,
+        "positive_delta_share": 0.6129032258064516,
+        "q25_daily_delta": -0.010354151790833613,
+        "q75_daily_delta": 0.01864291444635388
+      },
+      "historical_outcomes_only": {
+        "f1": 0.13894175866006853,
+        "positives": 5077,
+        "pr_auc": 0.059591876970474564,
+        "pr_auc_lift_over_prevalence": 10.456408357620521,
+        "precision": 0.13441355183207512,
+        "precision_lift_over_prevalence": 23.585143784793537,
+        "predicted_entries": 5431,
+        "predicted_entry_rate": 0.006096452136508442,
+        "prevalence": 0.005699077057089553,
+        "recall": 0.14378570021666337,
+        "roc_auc": 0.8098110328596042,
+        "rows": 890846,
+        "threshold": 0.06432679540065898,
+        "top_k": {
+          "k": 5077,
+          "lift_at_k": 23.812639071127176,
+          "positives_at_k": 689,
+          "precision_at_k": 0.13571006499901517,
+          "recall_at_k": 0.13571006499901517
+        },
+        "true_positives": 730
+      },
+      "quality_feature_gain_top15": [
+        {
+          "feature": "seconds_since_claim_fee",
+          "gain": 179
+        },
+        {
+          "feature": "hist_mature_7d_launch_count",
+          "gain": 160
+        },
+        {
+          "feature": "hist_mature_1d_launch_count",
+          "gain": 130
+        },
+        {
+          "feature": "hist_claimed_launch_fraction",
+          "gain": 113
+        },
+        {
+          "feature": "hist_claimed_launch_per_core_deploy",
+          "gain": 103
+        },
+        {
+          "feature": "hist_claim_fee_usd_per_claimed_launch",
+          "gain": 98
+        },
+        {
+          "feature": "hist_claim_fee_usd_max",
+          "gain": 97
+        },
+        {
+          "feature": "hist_claim_fee_usd_30d",
+          "gain": 97
+        },
+        {
+          "feature": "hist_pump_launch_count",
+          "gain": 84
+        },
+        {
+          "feature": "hist_decayed_30d_success_fraction",
+          "gain": 84
+        },
+        {
+          "feature": "hist_claim_event_count",
+          "gain": 76
+        },
+        {
+          "feature": "hist_claim_fee_usd_7d",
+          "gain": 61
+        },
+        {
+          "feature": "hist_claim_fee_sol_sum",
+          "gain": 46
+        },
+        {
+          "feature": "hist_mature_1d_success_fraction",
+          "gain": 33
+        },
+        {
+          "feature": "latest_prior_launch_claim_latency_seconds",
+          "gain": 32
+        }
+      ],
+      "quality_group_permutation_pr_auc_drop": 0.0566905465053187,
+      "train_positives": 6655,
+      "train_rows": 650194,
+      "validation_positives": 5077,
+      "validation_rows": 890846
+    }
+  }
+}

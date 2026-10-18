@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sniper HUD v2</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0b0d'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='30' fill='%2300d084'%3E%E2%97%86%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css?v=20">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- TOP BAR                                                        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="top-bar">
+  <div class="live-dot" id="live-dot"></div>
+  <span class="mode-pill paper" id="mode-pill">PAPER</span>
+  <span class="profile-name" id="top-profile">—</span>
+  <span class="spacer"></span>
+  <span class="top-stat">SOL <b id="top-sol">—</b></span>
+  <span class="top-stat">P&L <b id="top-pnl">$0.00</b></span>
+  <span class="top-stat">24h WR <b id="top-winrate">—</b></span>
+  <span class="top-stat health">Health <b id="top-health" class="elite">—</b></span>
+  <span class="top-stat" style="font-size:10px;color:var(--text-muted)">age <b id="top-data-age">—</b></span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- TAB BAR                                                        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="tab-bar">
+  <button class="tab-btn active" data-page="page-command">Command</button>
+  <button class="tab-btn" data-page="page-analytics">Analytics</button>
+  <button class="tab-btn" data-page="page-debug">Debug</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 1 — COMMAND (default)                                     -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page active" id="page-command">
+
+  <!-- P&L Cards -->
+  <div class="pnl-cards">
+    <div class="pnl-card">
+      <div class="pnl-label">Session P&L</div>
+      <div class="pnl-value pnl-zero" id="pnl-session">$0.00</div>
+      <div class="pnl-sub"><span id="pnl-session-roi">0.0%</span> ROI &middot; <span id="pnl-session-trades">0</span> trades</div>
+    </div>
+    <div class="pnl-card">
+      <div class="pnl-label">Unrealized</div>
+      <div class="pnl-value pnl-zero" id="pnl-unrealized">$0.00</div>
+      <div class="pnl-sub"><span id="pnl-open-count">0</span> open positions</div>
+    </div>
+    <div class="pnl-card">
+      <div class="pnl-label">Lifetime Expectancy</div>
+      <div class="pnl-value pnl-zero" id="pnl-expectancy">$0.00</div>
+      <div class="pnl-sub"><span id="pnl-lifetime-entries">0</span> entries &middot; <span id="pnl-lifetime-wr">0%</span> win rate</div>
+    </div>
+  </div>
+
+  <!-- Active Positions -->
+  <div class="card">
+    <div class="card-header">Active Positions</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Mint</th>
+          <th>Status</th>
+          <th>Entry Px</th>
+          <th>Mark Px</th>
+          <th>ROI</th>
+          <th>Stop</th>
+          <th>Hold</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="positions"></tbody>
+    </table>
+    <div class="empty-state" id="positions-empty">No open positions</div>
+  </div>
+
+  <!-- Two-column: Scorecard + Close Reasons -->
+  <div class="two-col">
+    <!-- Scorecard -->
+    <div class="card">
+      <div class="card-header">Scorecard <span class="c-dim" id="sc-window">(last 20)</span></div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Win Rate</span>
+        <span class="sc-value" id="sc-winrate">—</span>
+      </div>
+      <div class="sc-bar-wrap"><div class="sc-bar-fill" id="sc-winrate-bar" style="width:0;background:var(--green)"></div></div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Total P&L</span>
+        <span class="sc-value" id="sc-pnl">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Trades</span>
+        <span class="sc-value"><span id="sc-wins">0</span>W / <span id="sc-losses">0</span>L</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Hard Cap Exits</span>
+        <span class="sc-value" id="sc-hardcap">—</span>
+      </div>
+      <div style="margin-top:12px;text-align:center">
+        <span class="verdict" id="sc-verdict">—</span>
+      </div>
+    </div>
+
+    <!-- Close Reasons Bar Chart -->
+    <div class="card">
+      <div class="card-header">Close Reasons (Session)</div>
+      <div id="close-reasons-chart"></div>
+      <div class="empty-state" id="close-reasons-empty" style="display:none">No closed trades</div>
+    </div>
+  </div>
+
+  <!-- Market Stats Bar -->
+  <div class="market-bar">
+    <div class="market-stat">
+      <div class="ms-label">Uptime</div>
+      <div class="ms-value" id="mk-uptime">00:00:00</div>
+    </div>
+    <div class="market-stat">
+      <div class="ms-label">Market Temp</div>
+      <div class="ms-value" id="mk-temp">—</div>
+    </div>
+    <div class="market-stat">
+      <div class="ms-label">Unique Mints</div>
+      <div class="ms-value" id="mk-unique">0</div>
+    </div>
+    <div class="market-stat">
+      <div class="ms-label">Avg Latency</div>
+      <div class="ms-value" id="mk-latency">—</div>
+    </div>
+    <div class="market-stat">
+      <div class="ms-label">Parse Fails</div>
+      <div class="ms-value" id="mk-parsefail">0</div>
+    </div>
+    <div class="market-stat">
+      <div class="ms-label">RPC 429s</div>
+      <div class="ms-value" id="mk-rpc429">0</div>
+    </div>
+    <div class="market-stat">
+      <div class="ms-label">Jito</div>
+      <div class="ms-value" id="mk-jito">—</div>
+    </div>
+    <div class="market-stat">
+      <div class="ms-label">Min Liquidity</div>
+      <div class="ms-value" id="mk-minliq">—</div>
+    </div>
+  </div>
+
+  <!-- Controls Bar -->
+  <div class="controls-bar">
+    <div class="ctrl-section">
+      <div class="ctrl-label">Profile</div>
+      <div class="ctrl-row">
+        <span class="mono c-dim" style="font-size:12px">Active: <b id="ctrl-profile">—</b></span>
+        <button class="btn btn-green" id="btn-profile-safe">SAFE</button>
+        <button class="btn btn-amber" id="btn-profile-research">RESEARCH</button>
+        <button class="btn btn-blue" id="btn-profile-paper">PAPER</button>
+      </div>
+      <div class="mono c-dim" style="font-size:11px;margin-top:4px" id="ctrl-profile-status"></div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-label">Execution Gates</div>
+      <div class="ctrl-row">
+        <button class="btn btn-red" id="btn-toggle-live-tx">TX Disarmed</button>
+        <button class="btn btn-red" id="btn-toggle-trading">Trading Disabled</button>
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-label">Entry Control</div>
+      <div class="ctrl-row">
+        <button class="btn btn-green btn-active" id="btn-toggle-entries">Entries Enabled</button>
+        <button class="btn btn-danger" id="btn-flatten-all">Flatten All</button>
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-label">Session</div>
+      <div class="ctrl-row">
+        <button class="btn" id="btn-reset-session-metrics">Reset Metrics</button>
+        <button class="btn btn-danger" id="btn-start-paper-session">New Paper Session ($100)</button>
+        <button class="btn btn-amber" id="btn-hard-reset">Full Restart</button>
+        <button class="btn btn-amber" id="btn-restart">Reload Code</button>
+      </div>
+    </div>
+
+    <div class="ctrl-section">
+      <div class="ctrl-label">Mode Switch</div>
+      <div class="ctrl-row">
+        <button class="btn btn-blue" id="btn-set-mode-paper">Switch to Paper</button>
+        <button class="btn btn-danger" id="btn-set-mode-live">Switch to Live</button>
+        <span class="mono c-amber" style="font-size:11px;display:none" id="pending-mode"></span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-command -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 2 — ANALYTICS                                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-analytics">
+
+  <!-- Close Reason Full Table -->
+  <div class="card">
+    <div class="card-header">Close Reason Breakdown (Lifetime)</div>
+    <table>
+      <thead>
+        <tr><th>Reason</th><th>Count</th><th>Wins</th><th>Losses</th><th>P&L</th><th>Avg ROI%</th></tr>
+      </thead>
+      <tbody id="analytics-reasons"></tbody>
+    </table>
+  </div>
+
+  <!-- Two-column: MFE + Pre-entry -->
+  <div class="two-col">
+    <!-- MFE Capture Stats -->
+    <div class="card">
+      <div class="card-header">MFE Capture</div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Avg MFE</span>
+        <span class="sc-value" id="an-avg-mfe">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Avg MAE</span>
+        <span class="sc-value" id="an-avg-mae">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Avg Win</span>
+        <span class="sc-value" id="an-avg-win">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Avg Loss</span>
+        <span class="sc-value" id="an-avg-loss">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Avg Hold Time</span>
+        <span class="sc-value" id="an-avg-hold">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Quoteability Exits</span>
+        <span class="sc-value" id="an-quote-exits">0</span>
+      </div>
+    </div>
+
+    <!-- Pre-Entry Filter Stats -->
+    <div class="card">
+      <div class="card-header">Pre-Entry Filter</div>
+      <div class="sc-stat-row">
+        <span class="sc-label">OK (passed)</span>
+        <span class="sc-value c-green" id="pe-ok">—</span>
+      </div>
+      <div class="sc-bar-wrap"><div class="sc-bar-fill" id="pe-ok-bar" style="width:0;background:var(--green)"></div></div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Surge Rejected</span>
+        <span class="sc-value c-amber" id="pe-surge">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Dump Rejected</span>
+        <span class="sc-value c-red" id="pe-dump">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">OK Ratio</span>
+        <span class="sc-value" id="pe-ratio">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Log File</span>
+        <span class="sc-value c-dim" id="pe-logfile" style="font-size:11px">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytics Summary Table -->
+  <div class="card">
+    <div class="card-header">P&L by Window</div>
+    <table>
+      <thead>
+        <tr><th>Window</th><th>Realized</th><th>Unrealized</th><th>Total</th><th>Closed</th><th>Open</th><th>Win%</th><th>Expectancy</th></tr>
+      </thead>
+      <tbody id="analytics-summary"></tbody>
+    </table>
+  </div>
+
+  <!-- Graveyard -->
+  <div class="card">
+    <div class="card-header">The Graveyard</div>
+    <table>
+      <thead>
+        <tr><th>Mint</th><th>Reason</th><th>Threshold</th><th>Current Price</th><th>Missed ROI</th></tr>
+      </thead>
+      <tbody id="grave"></tbody>
+    </table>
+    <div class="empty-state" id="grave-empty" style="display:none">No graveyard entries</div>
+  </div>
+
+  <!-- Wallet Reconciliation -->
+  <div class="card">
+    <div class="card-header">Wallet Reconciliation</div>
+    <div id="wallet-recon-summary" class="mono c-dim" style="font-size:12px;margin-bottom:8px">—</div>
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody id="wallet-recon-body"></tbody>
+    </table>
+  </div>
+
+  <!-- Closed Positions -->
+  <div class="card">
+    <div class="card-header">Recent Closes</div>
+    <table>
+      <thead>
+        <tr><th>Mint</th><th>Reason</th><th>Exit Time</th><th>Exit Px</th><th>ROI%</th></tr>
+      </thead>
+      <tbody id="closed-positions"></tbody>
+    </table>
+  </div>
+
+  <!-- Two-column: Replay + Exit Lab -->
+  <div class="two-col">
+
+    <!-- Card A: Replay Analysis -->
+    <div class="card">
+      <div class="card-header">
+        Replay Analysis
+        <span style="float:right;display:flex;align-items:center;gap:8px">
+          <span class="c-dim" style="font-size:10px" id="replay-updated">—</span>
+          <button class="btn btn-xs" id="btn-refresh-replay">Refresh</button>
+        </span>
+      </div>
+      <div id="replay-body" class="c-dim" style="font-size:12px">Click Refresh to load</div>
+    </div>
+
+    <!-- Card B: Exit Strategy Lab -->
+    <div class="card">
+      <div class="card-header">
+        Exit Strategy Lab
+        <span style="float:right;display:flex;align-items:center;gap:8px">
+          <span class="c-dim" style="font-size:10px" id="exitlab-updated">—</span>
+          <button class="btn btn-xs" id="btn-refresh-exitlab">Refresh</button>
+        </span>
+      </div>
+      <div id="exitlab-body" class="c-dim" style="font-size:12px">Click Refresh to load</div>
+    </div>
+
+  </div>
+
+</div><!-- /page-analytics -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 3 — DEBUG                                                 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-debug">
+
+  <!-- RPC Health -->
+  <div class="card">
+    <div class="card-header">RPC Health</div>
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody id="rpc-health-body"></tbody>
+    </table>
+  </div>
+
+  <!-- Two-column: Health + Mode Safety -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header">System Health</div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Score</span>
+        <span class="sc-value" id="dbg-health-score">—</span>
+      </div>
+      <div class="sc-bar-wrap"><div class="sc-bar-fill" id="dbg-health-bar" style="width:0;background:var(--green)"></div></div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Parse Fail Rate</span>
+        <span class="sc-value" id="dbg-parse-fail">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">RPC 429 Rate</span>
+        <span class="sc-value" id="dbg-rpc429-rate">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Decision Coverage</span>
+        <span class="sc-value" id="dbg-cov">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">WS Disconnects (1h)</span>
+        <span class="sc-value" id="dbg-ws-disc">0</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">WS Status</span>
+        <span class="sc-value" id="dbg-ws-status">—</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">RPC Timeouts (1h)</span>
+        <span class="sc-value" id="dbg-rpc-timeouts">0</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Mode Safety</div>
+      <table>
+        <thead><tr><th>Field</th><th>Value</th></tr></thead>
+        <tbody id="mode-safety-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Jupiter Stats -->
+  <div class="card">
+    <div class="card-header">Jupiter API</div>
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody id="jupiter-body"></tbody>
+    </table>
+  </div>
+
+  <!-- Two-column: Candidate Timing + Entry Funnel -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header">Candidate Timing</div>
+      <table>
+        <thead><tr><th>Field</th><th>Value</th></tr></thead>
+        <tbody id="candidate-timing-body"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-header">Entry Funnel</div>
+      <table>
+        <thead><tr><th>Field</th><th>Value</th></tr></thead>
+        <tbody id="entry-funnel-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Execution Audit + Latency -->
+  <div class="card">
+    <div class="card-header">Execution Audit</div>
+    <table>
+      <thead><tr><th>Field</th><th>Value</th></tr></thead>
+      <tbody id="execution-audit-body"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Latency Breakdown</div>
+    <div class="market-bar" style="border:none;padding:8px 0">
+      <div class="market-stat"><div class="ms-label">Headline</div><div class="ms-value" id="lat-headline">—</div></div>
+      <div class="market-stat"><div class="ms-label">Decision</div><div class="ms-value" id="lat-decision">—</div></div>
+      <div class="market-stat"><div class="ms-label">Parse</div><div class="ms-value" id="lat-parse">—</div></div>
+      <div class="market-stat"><div class="ms-label">getTx</div><div class="ms-value" id="lat-gettx">—</div></div>
+      <div class="market-stat"><div class="ms-label">Dependency</div><div class="ms-value" id="lat-dependency">—</div></div>
+      <div class="market-stat"><div class="ms-label">Execution</div><div class="ms-value" id="lat-exec">—</div></div>
+      <div class="market-stat"><div class="ms-label">Dominant</div><div class="ms-value" id="lat-dominant">—</div></div>
+    </div>
+  </div>
+
+  <!-- Decision Breakdown -->
+  <div class="card">
+    <div class="card-header">Decision Breakdown (Daily UTC)</div>
+    <table>
+      <thead>
+        <tr><th>Scans</th><th>Unique</th><th>Dupes</th><th>Veto Liq</th><th>Veto Px</th><th>Parse Fail</th><th>Entries</th><th>Other</th></tr>
+      </thead>
+      <tbody id="breakdown"></tbody>
+    </table>
+  </div>
+
+  <!-- Terminal Blockers + Anomalies -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header">Terminal Blockers</div>
+      <table>
+        <thead><tr><th>Field</th><th>Value</th></tr></thead>
+        <tbody id="terminal-blockers-body"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-header">Operator Anomalies</div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Restored TP Blocked</span>
+        <span class="sc-value" id="anom-restored-tp">0</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Zero Qty No Close</span>
+        <span class="sc-value" id="anom-zero-qty">0</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Reentry Blocked</span>
+        <span class="sc-value" id="anom-reentry">0</span>
+      </div>
+      <div class="sc-stat-row">
+        <span class="sc-label">Contaminated</span>
+        <span class="sc-value" id="anom-contaminated-count">0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Raw Telemetry JSON -->
+  <div class="card">
+    <div class="card-header">Raw Telemetry</div>
+    <pre class="json-view" id="debug-raw">{}</pre>
+  </div>
+
+</div><!-- /page-debug -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- LOADING OVERLAY                                                -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Connecting to telemetry...</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- CONFIRM DIALOG                                                 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="confirm-dialog hidden" id="confirm-dialog">
+  <div class="confirm-box">
+    <h3 id="confirm-title">Confirm Action</h3>
+    <p id="confirm-message">Are you sure?</p>
+    <div class="btn-row">
+      <button class="btn" id="confirm-cancel">Cancel</button>
+      <button class="btn btn-danger" id="confirm-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script src="/app.js?v=40"></script>
+</body>
+</html>

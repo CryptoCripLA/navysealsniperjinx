@@ -1,0 +1,34 @@
+<Window x:Class="PumpCopy.App.Views.AddLeaderDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Add leader wallet" Width="460" Height="230"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="{StaticResource Bg}">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Text="alias" Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
+        <TextBox x:Name="AliasBox" Grid.Column="1" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="1" Text="wallet" Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
+        <TextBox x:Name="AddressBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,8" FontFamily="{StaticResource MonoFont}"/>
+
+        <TextBlock Grid.Row="2" Text="mult" Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
+        <TextBox x:Name="MultBox" Grid.Row="2" Grid.Column="1" Text="1.0" Width="80" HorizontalAlignment="Left"/>
+
+        <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="add" Style="{StaticResource AccentButton}" IsDefault="True" Click="OnOkClick"/>
+            <Button Content="cancel" Margin="8,0,0,0" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
