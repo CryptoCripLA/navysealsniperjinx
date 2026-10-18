@@ -1,0 +1,36 @@
+{
+  "jsonrpc": "2.0",
+  "method": "transactionNotification",
+  "params": {
+    "result": {
+      "transaction": {
+        "meta": {
+          "innerInstructions": [
+            {
+              "instructions": [
+                {
+                  "parsed": {
+                    "type": "transfer",
+                    "info": {
+                      "amount": "10000000",
+                      "destination": "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG"
+                    }
+                  }
+                },
+                {
+                  "parsed": {
+                    "type": "transfer",
+                    "info": {
+                      "authority": "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",
+                      "source": "8UJgxaiQx5nTrdDgph5FyerMmzgWJrahHUdijBiDdvUJ"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

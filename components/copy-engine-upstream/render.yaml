@@ -1,0 +1,21 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# SQLite (positions.db, agent_audit.db) is ephemeral on free tier unless you add a Render Disk.
+
+services:
+  - type: web
+    name: solana-sniper
+    runtime: rust
+    plan: starter
+    buildCommand: cargo build --release
+    startCommand: ./target/release/trading-bot
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: RUST_LOG
+        value: info
+      - key: DRY_RUN
+        value: "true"
+      # Set remaining secrets in the Render dashboard (sync: false):
+      # RPC_ENDPOINT, RPC_WEBSOCKET_ENDPOINT, PRIVATE_KEY, TARGET_PUBKEY,
+      # JUP_PUBKEY, SOL_PUBKEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, etc.
