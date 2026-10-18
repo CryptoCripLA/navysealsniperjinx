@@ -28,7 +28,13 @@ class JinxRunner:
         self.submitted_tx = None
         self.journal = journal
         if journal is not None and journal.read() is not None:
-            raise RuntimeError('unresolved order journal; recovery required')
+            record = journal.read()
+            if record['state'] != 'PENDING' or not record.get('tx_id'):
+                raise RuntimeError('ambiguous submission; external chain investigation required')
+            pending = brain.pending
+            if pending is None or pending.action != record['action'] or pending.mint != record['mint']:
+                raise RuntimeError('restore matching brain state before recovery')
+            self.submitted_tx = record['tx_id']
 
     def _submit_once(self):
         if self.journal is not None:
