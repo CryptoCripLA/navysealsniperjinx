@@ -1,0 +1,31 @@
+name: Import Mew-X verbatim
+on:
+  push:
+    paths:
+      - .github/workflows/import-mewx-verbatim.yml
+permissions:
+  contents: write
+jobs:
+  import-upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Replace old donor layout with exact upstream Mew-X source
+        shell: bash
+        run: |
+          set -euo pipefail
+          UPSTREAM="$RUNNER_TEMP/Mew-X"
+          git clone --quiet https://github.com/FLOCK4H/Mew-X.git "$UPSTREAM"
+          git -C "$UPSTREAM" cat-file -e '9c429fe199ea89d17ad9355cdbe58bf613db8ad4^{commit}'
+          test "$(git -C "$UPSTREAM" rev-parse HEAD)" = '9c429fe199ea89d17ad9355cdbe58bf613db8ad4' || git -C "$UPSTREAM" checkout --quiet --detach '9c429fe199ea89d17ad9355cdbe58bf613db8ad4'
+          test "$(git -C "$UPSTREAM" rev-parse HEAD)" = '9c429fe199ea89d17ad9355cdbe58bf613db8ad4'
+          find "$GITHUB_WORKSPACE" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf -- {} +
+          git -C "$UPSTREAM" archive --format=tar '9c429fe199ea89d17ad9355cdbe58bf613db8ad4' | tar -xf - -C "$GITHUB_WORKSPACE"
+          git add -A
+          test "$(git ls-files | wc -l)" -eq 38
+          if git ls-files | grep -q '^donors/'; then echo 'Old donors unexpectedly remain' >&2; exit 1; fi
+          git -c user.name='JINX Upstream Import' -c user.email='jinx-upstream@users.noreply.github.com' commit -m 'Replace donor collection with verbatim Mew-X source at 9c429fe199ea89d17ad9355cdbe58bf613db8ad4'
+          git push origin HEAD:main
