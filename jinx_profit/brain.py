@@ -163,5 +163,6 @@ class ProfitBrain:
             self.phase=Phase.FLAT
             self.closed_trades+=1
         else:
-            self.phase=Phase.OPEN
+            self.pending=Intent("SELL",mint,0.0,"complete_remaining_liquidation")
+            self.phase=Phase.SELL_PENDING
         return self.realized_usd
