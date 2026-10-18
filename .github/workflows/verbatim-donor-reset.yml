@@ -1,0 +1,74 @@
+name: Verbatim donor source reset
+on:
+  push:
+    paths:
+      - .github/workflows/verbatim-donor-reset.yml
+permissions:
+  contents: write
+jobs:
+  import-verbatim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Replace implementation with ten exact upstream donor checkouts
+        shell: bash
+        run: |
+          set -euo pipefail
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf -- {} +
+          mkdir -p donors
+          git clone --quiet https://github.com/D1ff1cult11/solana-sniper-bot-reverse-engineering.git /tmp/donor-difficult
+          git -C /tmp/donor-difficult checkout --quiet 714ec6d046650f164c7c40616ebf20061a3a00b0
+          mkdir -p donors/difficult
+          cp -a /tmp/donor-difficult/. donors/difficult/
+          rm -rf donors/difficult/.git
+          git clone --quiet https://github.com/Sorghobrayan-dotcom/solana-sniper-reverse-engineering.git /tmp/donor-sorghobrayan
+          git -C /tmp/donor-sorghobrayan checkout --quiet 56ba2517d6cfb5b8f73ad919bbaf350bd8f7abd7
+          mkdir -p donors/sorghobrayan
+          cp -a /tmp/donor-sorghobrayan/. donors/sorghobrayan/
+          rm -rf donors/sorghobrayan/.git
+          git clone --quiet https://github.com/Kaizen256/solana-sniper-reverse-engineering.git /tmp/donor-kaizen
+          git -C /tmp/donor-kaizen checkout --quiet 878ff2fd20f27ce3ca51ac3b239ef90dfda4e179
+          mkdir -p donors/kaizen
+          cp -a /tmp/donor-kaizen/. donors/kaizen/
+          rm -rf donors/kaizen/.git
+          git clone --quiet https://github.com/alexanderlmoran/solana-micro-sniper.git /tmp/donor-moran
+          git -C /tmp/donor-moran checkout --quiet 529749f4f946dba2806aa2d2545612d93a36f4c2
+          mkdir -p donors/moran
+          cp -a /tmp/donor-moran/. donors/moran/
+          rm -rf donors/moran/.git
+          git clone --quiet https://github.com/anchoys1337/solana-wallet-behavior-analysis.git /tmp/donor-wallet_behavior
+          git -C /tmp/donor-wallet_behavior checkout --quiet 3e65c87efe9d5152ab6613564c2f238f0ae7df7f
+          mkdir -p donors/wallet_behavior
+          cp -a /tmp/donor-wallet_behavior/. donors/wallet_behavior/
+          rm -rf donors/wallet_behavior/.git
+          git clone --quiet https://github.com/lyc0603/copytrading.git /tmp/donor-copy_economics
+          git -C /tmp/donor-copy_economics checkout --quiet b1cb1bc39974f07fce0f44c343975715215508d3
+          mkdir -p donors/copy_economics
+          cp -a /tmp/donor-copy_economics/. donors/copy_economics/
+          rm -rf donors/copy_economics/.git
+          git clone --quiet https://github.com/windowopner/pumpfun-sim.git /tmp/donor-pump_sim
+          git -C /tmp/donor-pump_sim checkout --quiet 7fed6cfa5b05428235b094097fdd119063ec3de6
+          mkdir -p donors/pump_sim
+          cp -a /tmp/donor-pump_sim/. donors/pump_sim/
+          rm -rf donors/pump_sim/.git
+          git clone --quiet https://github.com/z17620794987-hub/pumpfun-market-lab.git /tmp/donor-market_lab
+          git -C /tmp/donor-market_lab checkout --quiet 748720c9d5bd55b79368c53738dd7f05841c847b
+          mkdir -p donors/market_lab
+          cp -a /tmp/donor-market_lab/. donors/market_lab/
+          rm -rf donors/market_lab/.git
+          git clone --quiet https://github.com/wesson9527/money-money-come.git /tmp/donor-wallet_profiles
+          git -C /tmp/donor-wallet_profiles checkout --quiet f184c4211265a411e77e16c62d461b84fb8d108b
+          mkdir -p donors/wallet_profiles
+          cp -a /tmp/donor-wallet_profiles/. donors/wallet_profiles/
+          rm -rf donors/wallet_profiles/.git
+          git clone --quiet https://github.com/harutocodes/pumpfun-copytrade.git /tmp/donor-pumpcopy
+          git -C /tmp/donor-pumpcopy checkout --quiet a3b5f17550c4a19e429153433585a3cb3ca5714d
+          mkdir -p donors/pumpcopy
+          cp -a /tmp/donor-pumpcopy/. donors/pumpcopy/
+          rm -rf donors/pumpcopy/.git
+          git add -A
+          git -c user.name='JINX Source Import' -c user.email='jinx-source-import@users.noreply.github.com' commit -m 'Restore exact upstream source from ten donor repos'
+          git push origin HEAD:main
