@@ -22,9 +22,16 @@ class DurableRunnerTests(unittest.TestCase):
    self.assertEqual(j.read()["tx_id"],"tx1")
    self.assertEqual(v.calls,1)
    with self.assertRaises(RuntimeError):JinxRunner(ProfitBrain(mode="COPY",wallet_usd=20),v,OrderJournal(Path(d)/"pending.json"))
+   restored=ProfitBrain(mode="COPY",wallet_usd=20)
+   restored.propose_buy(source="COPY",mint="m",available_buy_usd=5,expected_net_exit_usd=12,leader_verified=True,leader_expected_net_usd=1)
+   recovery=JinxRunner(restored,v,OrderJournal(Path(d)/"pending.json"))
+   self.assertEqual(recovery.submitted_tx,"tx1")
+   self.assertFalse(recovery.reconcile())
+   self.assertEqual(v.calls,1)
    self.assertEqual(v.calls,1)
    v.receipts["tx1"]=ExecutionReceipt("m","BUY","tx1",10,5,0)
-   self.assertTrue(r.reconcile())
+   self.assertTrue(recovery.reconcile())
+   self.assertEqual(restored.phase.value,"OPEN")
    self.assertIsNone(j.read())
  def test_submission_failure_leaves_uncertain_journal(self):
   with tempfile.TemporaryDirectory() as d:
