@@ -6,7 +6,7 @@ Usage: python -m jinx_profit.cli train trades.jsonl model.joblib
 import argparse
 import json
 from pathlib import Path
-from .features import extract_deployment_features
+from .features import FEATURE_NAMES, extract_deployment_features
 from .model import train_profit_model, score_opportunity
 
 def main(argv=None):
@@ -18,6 +18,10 @@ def main(argv=None):
     score = sub.add_parser("score")
     score.add_argument("input_model")
     score.add_argument("input_transaction")
+    donor = sub.add_parser("donor-train")
+    donor.add_argument("deployments_jsonl")
+    donor.add_argument("trades_jsonl")
+    donor.add_argument("output_model")
     args = parser.parse_args(argv)
     if args.action == "train":
         import joblib
@@ -25,6 +29,17 @@ def main(argv=None):
         estimator, unseen = train_profit_model(rows)
         joblib.dump(estimator, args.output_model)
         print(json.dumps({"trained_on":len(rows)-len(unseen),"held_out":len(unseen),"model":args.output_model}))
+    elif args.action == "donor-train":
+        import joblib
+        from .donor_d1ff1cult11 import read_jsonl, build_labeled_dataset, fit_donor_replica, donor_slot_comparison
+        data = build_labeled_dataset(read_jsonl(args.deployments_jsonl), read_jsonl(args.trades_jsonl))
+        estimator, holdout = fit_donor_replica(data)
+        joblib.dump(estimator, args.output_model)
+        features = [[r["features"][key] for key in FEATURE_NAMES] for r in holdout]
+        selected = [p[1] >= 0.5 for p in estimator.predict_proba(features)]
+        print(json.dumps({"model":args.output_model,"total_closed":len(data),
+                          "holdout":len(holdout),"donor_slot_comparison":
+                          donor_slot_comparison(holdout, selected)}))
     else:
         import joblib
         estimator = joblib.load(args.input_model)
