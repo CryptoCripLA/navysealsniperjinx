@@ -1,0 +1,27 @@
+name: Verify untouched Mew-X Rust source
+on:
+  push:
+    branches:
+      - verify-mewx-compile
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check-original:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - name: Checkout full source exactly as committed
+        uses: actions/checkout@v4
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: Cache compiler dependencies
+        uses: Swatinem/rust-cache@v2
+      - name: Verify untouched source compiles
+        run: cargo check --locked --all-targets
+        env:
+          CARGO_BUILD_JOBS: "2"
+      - name: Ensure original source files remain unchanged
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
