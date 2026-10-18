@@ -22,10 +22,22 @@ class MarketOpportunity:
     leader_expected_net_usd: float | None = None
 
 class JinxRunner:
-    def __init__(self, brain: ProfitBrain, venue):
+    def __init__(self, brain: ProfitBrain, venue, journal=None):
         self.brain = brain
         self.port = SingleOrderPort(brain, venue)
         self.submitted_tx = None
+        self.journal = journal
+        if journal is not None and journal.read() is not None:
+            raise RuntimeError('unresolved order journal; recovery required')
+
+    def _submit_once(self):
+        if self.journal is not None:
+            self.journal.begin(self.brain.pending)
+        tx = self.port.submit_pending()
+        if self.journal is not None:
+            self.journal.submitted(tx)
+        self.submitted_tx = tx
+        return tx
 
     def on_opportunity(self, event: MarketOpportunity):
         if self.submitted_tx is not None:
@@ -42,7 +54,7 @@ class JinxRunner:
             leader_expected_net_usd=event.leader_expected_net_usd)
         if decision.action != "BUY":
             return decision
-        self.submitted_tx = self.port.submit_pending()
+        self._submit_once()
         return decision
 
     def on_position_quote(self, *, mint, full_exit_usd, fees_usd, force=False):
@@ -52,7 +64,7 @@ class JinxRunner:
             mint=mint, executable_full_sell_usd=full_exit_usd,
             sell_fees_usd=fees_usd, force=force)
         if decision.action == "SELL":
-            self.submitted_tx = self.port.submit_pending()
+            self._submit_once()
         return decision
 
     def resume_pending_liquidation(self):
@@ -62,7 +74,7 @@ class JinxRunner:
         pending = self.brain.pending
         if pending is None or pending.action != "SELL":
             return None
-        self.submitted_tx = self.port.submit_pending()
+        self._submit_once()
         return self.submitted_tx
 
     def reconcile(self):
@@ -71,5 +83,7 @@ class JinxRunner:
         tx = self.submitted_tx
         settled = self.port.reconcile(tx)
         if settled:
+            if self.journal is not None:
+                self.journal.clear()
             self.submitted_tx = None
         return settled
