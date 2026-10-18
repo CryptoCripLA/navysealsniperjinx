@@ -39,4 +39,22 @@ class RunnerTests(unittest.TestCase):
   b=ProfitBrain(mode="OFF",wallet_usd=20);v=Venue();r=JinxRunner(b,v)
   self.assertEqual(r.on_opportunity(MarketOpportunity("AUTO","mint",5,12,0,100)).action,"WAIT")
   self.assertEqual(v.sent,[])
+ def test_partial_exit_remainder_submission(self):
+  b=ProfitBrain(mode="COPY",wallet_usd=20);v=Venue();r=JinxRunner(b,v)
+  r.on_opportunity(MarketOpportunity("COPY","m",5,12,0,100,leader_verified=True,leader_expected_net_usd=4))
+  v.fills["tx1"]=ExecutionReceipt("m","BUY","tx1",10,5,0)
+  r.reconcile()
+  r.on_position_quote(mint="m",full_exit_usd=12,fees_usd=0,force=True)
+  v.holdings["m"]=4
+  v.fills["tx2"]=ExecutionReceipt("m","SELL","tx2",6,7,0,4)
+  r.reconcile()
+  self.assertEqual(b.phase,Phase.SELL_PENDING)
+  self.assertEqual(r.resume_pending_liquidation(),"tx3")
+  self.assertEqual(r.resume_pending_liquidation(),None)
+  v.holdings["m"]=0
+  v.fills["tx3"]=ExecutionReceipt("m","SELL","tx3",4,5,0,0)
+  r.reconcile()
+  self.assertEqual(b.phase,Phase.FLAT)
+  self.assertEqual(b.closed_trades,1)
+  self.assertAlmostEqual(b.realized_usd,7)
 if __name__=="__main__":unittest.main()
