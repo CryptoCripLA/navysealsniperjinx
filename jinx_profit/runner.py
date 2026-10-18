@@ -55,6 +55,16 @@ class JinxRunner:
             self.submitted_tx = self.port.submit_pending()
         return decision
 
+    def resume_pending_liquidation(self):
+        """Submit the next remainder after a confirmed partial exit."""
+        if self.submitted_tx is not None:
+            return None
+        pending = self.brain.pending
+        if pending is None or pending.action != "SELL":
+            return None
+        self.submitted_tx = self.port.submit_pending()
+        return self.submitted_tx
+
     def reconcile(self):
         if self.submitted_tx is None:
             return False
