@@ -1,8 +1,0 @@
-interface:
-  display_name: "Money Money Come"
-  short_description: "BSC / Solana 聪明钱画像、分组信号与 OKX Signal 提醒"
-  brand_color: "#12161F"
-  default_prompt: "Use $money-money-come to analyze my BSC or Solana smart-money wallet list, classify wallets by quality and behavior, then configure grouped Telegram alerts plus OKX official Signal reminders."
-
-policy:
-  allow_implicit_invocation: true
