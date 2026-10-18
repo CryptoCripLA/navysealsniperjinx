@@ -42,7 +42,7 @@ class BrainTests(unittest.TestCase):
         b.apply_buy_fill(mint="m",qty=10,gross_paid_usd=10,fees_usd=0)
         b.observe_exit(mint="m",executable_full_sell_usd=12,force=True)
         b.apply_sell_fill(mint="m",qty_sold=5,gross_received_usd=6,fees_usd=0,verified_remaining_qty=5)
-        self.assertEqual(b.phase,Phase.OPEN)
+        self.assertEqual(b.phase,Phase.SELL_PENDING)
         self.assertEqual(b.propose_buy(source="COPY",mint="other",available_buy_usd=3,expected_net_exit_usd=6,leader_verified=True,leader_expected_net_usd=1).action,"WAIT")
 
 if __name__=="__main__":unittest.main()
