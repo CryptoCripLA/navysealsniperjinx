@@ -1,0 +1,76 @@
+name: Mew-X isolated simulation smoke test
+on:
+  push:
+    paths:
+      - .github/workflows/mewx-sim-smoke.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-sim:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test_only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Prepare isolated original databases
+        env:
+          PGPASSWORD: test_only
+        run: |
+          psql -h localhost -U postgres -c 'CREATE DATABASE vacation;'
+          psql -h localhost -U postgres -c 'CREATE DATABASE goldmine;'
+      - name: Generate ephemeral unfunded simulation key
+        run: |
+          python3 -m pip -q install pynacl
+          python3 - <<'PY'
+          import os
+          from nacl.signing import SigningKey
+          secret = SigningKey.generate()
+          payload = bytes(secret) + bytes(secret.verify_key)
+          alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+          number = int.from_bytes(payload, 'big')
+          value = ''
+          while number:
+              number, digit = divmod(number, 58)
+              value = alphabet[digit] + value
+          value = alphabet[0] * (len(payload) - len(payload.lstrip(b'\\0'))) + value
+          with open(os.environ['GITHUB_ENV'], 'a') as out:
+              out.write('PRIVATE_KEY=' + value + '\\n')
+          print('Created disposable, unfunded key for sim; no real wallet accessed')
+          PY
+      - name: Compile original Mew-X application
+        env:
+          CARGO_BUILD_JOBS: "2"
+        run: cargo build --locked -j 2
+      - name: Attempt original simulation startup without live transactions
+        env:
+          MODE: sim
+          DB_URL: postgres://postgres:test_only@localhost:5432
+          RPC_URL: https://api.mainnet-beta.solana.com
+          WS_URL: wss://api.mainnet-beta.solana.com
+          USE_GRPC: "false"
+          USE_REGIONS: "false"
+          TX_STRAT: rpc
+          MAX_TOKENS_AT_ONCE: "1"
+        shell: bash
+        run: |
+          set +e
+          timeout 45s target/debug/mew > /tmp/mew-sim.log 2>&1
+          rc=$?
+          sed -E 's/(PRIVATE_KEY|GRPC_TOKEN|RPC_URL):[^, ]+/\\1:[masked]/g' /tmp/mew-sim.log | tail -70
+          echo "SIM_START_EXIT=$rc"
+          if grep -E -q 'thread.*panicked|panicked at|Error:|invalid / not set' /tmp/mew-sim.log; then exit 1; fi
+          test "$rc" = 124 || test "$rc" = 0
