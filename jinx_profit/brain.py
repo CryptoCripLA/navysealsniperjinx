@@ -11,6 +11,7 @@ from .model import score_opportunity
 from .donor_kaizen256 import deployer_relationship_features
 from .donor_alexanderlmoran import trailing_exit_signal
 from .donor_sorghobrayan import decode_notch
+from .donor_shared_adapters import copier_expected_net_usd, executable_net_profit_usd
 
 class Mode(str, Enum):
     AUTO="AUTO"
@@ -95,6 +96,14 @@ class ProfitBrain:
                 # USD amount remains bounded by an externally supplied executable quote.
         elif not leader_verified or leader_expected_net_usd is None or leader_expected_net_usd<=0:
             return Intent("WAIT", reason="unverified_copy_opportunity")
+        if self.mode==Mode.COPY:
+            copy_net=copier_expected_net_usd(expected_exit_usd=expected_net_exit_usd,
+                         buy_usd=spend,entry_fees_usd=expected_total_fees_usd,exit_fees_usd=0)
+            if copy_net<=0:
+                return Intent("WAIT",reason="copy_net_unprofitable")
+        if executable_net_profit_usd(buy_total_usd=spend+expected_total_fees_usd,
+                full_exit_quote_usd=expected_net_exit_usd,expected_sell_fees_usd=0)<=0:
+            return Intent("WAIT",reason="no_executable_profit")
         intent=Intent("BUY",mint,spend,"single_brain")
         self.pending=intent
         self.phase=Phase.BUY_PENDING
