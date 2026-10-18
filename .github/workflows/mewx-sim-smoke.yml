@@ -1,8 +1,8 @@
 name: Mew-X isolated simulation smoke test
 on:
   push:
-    paths:
-      - .github/workflows/mewx-sim-smoke.yml
+    branches:
+      - verify-mewx-compile
   workflow_dispatch:
 permissions:
   contents: read
