@@ -46,9 +46,9 @@ jobs:
           while number:
               number, digit = divmod(number, 58)
               value = alphabet[digit] + value
-          value = alphabet[0] * (len(payload) - len(payload.lstrip(b'\\0'))) + value
+          value = alphabet[0] * (len(payload) - len(payload.lstrip(b'\0'))) + value
           with open(os.environ['GITHUB_ENV'], 'a') as out:
-              out.write('PRIVATE_KEY=' + value + '\\n')
+              out.write('PRIVATE_KEY=' + value + '\n')
           print('Created disposable, unfunded key for sim; no real wallet accessed')
           PY
       - name: Compile original Mew-X application
