@@ -1,0 +1,25 @@
+name: Import original COPY engine source
+on:
+  push:
+    paths:
+      - .github/workflows/import-original-copy-source.yml
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Copy original MIT-licensed copy-trader unchanged
+        run: |
+          set -euo pipefail
+          git clone --quiet https://github.com/0xJonaseb11/solana-trading-bot.git /tmp/original-copy-engine
+          git -C /tmp/original-copy-engine checkout --quiet --detach 883ef31f6d7e99be7097c3a2179a87695776f187
+          test "$(git -C /tmp/original-copy-engine rev-parse HEAD)" = 883ef31f6d7e99be7097c3a2179a87695776f187
+          mkdir -p components/copy-engine-upstream
+          git -C /tmp/original-copy-engine archive HEAD | tar -xf - -C components/copy-engine-upstream
+          git add -A
+          git -c user.name='JINX source import' -c user.email='jinx-import@users.noreply.github.com' commit -m 'Vendor verbatim MIT copy-trader source, separate from Mew-X'
+          git push origin HEAD:copy-engine-original-source
