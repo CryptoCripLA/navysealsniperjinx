@@ -1,0 +1,26 @@
+name: Import MIT-licensed 833k sniper study verbatim
+on:
+  push:
+    paths:
+      - .github/workflows/import-833k-sniper-study.yml
+permissions:
+  contents: write
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Import pinned upstream source without modifications
+        run: |
+          set -euo pipefail
+          git clone --quiet https://github.com/Sorghobrayan-dotcom/solana-sniper-reverse-engineering.git /tmp/sniper-study
+          git -C /tmp/sniper-study checkout --quiet --detach 56ba2517d6cfb5b8f73ad919bbaf350bd8f7abd7
+          test "$(git -C /tmp/sniper-study rev-parse HEAD)" = "56ba2517d6cfb5b8f73ad919bbaf350bd8f7abd7"
+          mkdir -p components/profit-intelligence-833k
+          git -C /tmp/sniper-study archive HEAD | tar -xf - -C components/profit-intelligence-833k
+          git add -A
+          git -c user.name='JINX Source Import' -c user.email='jinx-import@users.noreply.github.com' commit -m 'Vendor MIT sniper research code verbatim from studied 833k wallet'
+          git push origin HEAD:profit-intelligence-833k-donor
