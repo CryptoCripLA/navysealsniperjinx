@@ -352,6 +352,7 @@ impl MewSnipe {
         }
 
         let mut should_sell = false;
+        let mut exit_reason = String::from("unknown");
         let mut profit_lapse: Option<Instant> = None;
         let mut recent_profits_diffs: AllocRingBuffer<f64> = AllocRingBuffer::new(10);
         let mut last_profit = 0.0;
@@ -369,6 +370,7 @@ impl MewSnipe {
                     Some(m) => m.clone(),
                     None => {
                         warn!("sim_session: Mint removed: {:?}", mint.mint);
+                        exit_reason = String::from("mint_removed");
                         break;
                     }
                 }
@@ -384,6 +386,7 @@ impl MewSnipe {
             if profit <= -max_loss {
                 if profit_lapse.is_some() {
                     if profit_lapse.unwrap().elapsed().as_millis() > 200 {
+                        exit_reason = String::from("stop_loss");
                         log!(cc::LIGHT_RED, "Mint sold due to loss: {:?} | Profit: {:.6}%", snapshot.mint, profit);
                         should_sell = true;
                         profit_lapse = None;
@@ -392,6 +395,7 @@ impl MewSnipe {
                     profit_lapse = Some(Instant::now());
                 }
             } else if (take_profit > 0.0) && (profit >= take_profit) {
+                exit_reason = String::from("take_profit");
                 log!(cc::LIGHT_GREEN, "Mint sold due to profit: {:?} | Profit: {:.6}%", snapshot.mint, profit);
                 should_sell = true;
             }
@@ -400,6 +404,7 @@ impl MewSnipe {
             let token_stage_activity_ms = { if (snapshot.buys < 50 && profit < 10.0) || (snapshot.buys < 20) {max_na_on_start_ms} else {max_no_activity_ms} };
             let elapsed = last_update.elapsed().as_millis();
             if elapsed > token_stage_activity_ms as u128 {
+                exit_reason = String::from("inactivity");
                 log!(cc::LIGHT_YELLOW, "Selling Mint because of inactivity (MAX_NA_ON_START_MS: {:?}ms, MAX_NO_ACTIVITY_MS: {:?}ms) | Mint: {:?} | Last Update: {:?} | Last profit recorded: {:.6}%", max_na_on_start_ms, max_no_activity_ms, snapshot.mint, elapsed, last_profit);
                 should_sell = true;
             }
@@ -421,6 +426,7 @@ impl MewSnipe {
                         .iter().sum::<f64>();
                     if (recent_profits < -20.0 && profit < 100.0)
                     || (profit >= 200.0 && highest_profit / 2.0 > profit) {
+                        exit_reason = String::from("momentum_reversal");
                         log!(cc::LIGHT_RED, "Selling Mint because recent profits is too low: {:?} | Check recent profits: {:.6}%", snapshot.mint, recent_profits);
                         should_sell = true;
                     }
@@ -436,6 +442,7 @@ impl MewSnipe {
 
             // dev sold check
             if snapshot.creator_sold && first_creator_balance > min_dev_sold as f64 {
+                exit_reason = String::from("creator_sold");
                 log!(cc::LIGHT_WHITE, "Mint: {:?} | Dev Sold: {} | Profit: {:.6}%", snapshot.mint, snapshot.creator_sold, profit);
                 should_sell = true;
             }
@@ -481,6 +488,12 @@ impl MewSnipe {
             };
 
             self.goldmine.upsert_sim(&sim).await.unwrap();
+        }
+        let closing_price = self.mints.read().await.get(&mint.mint).map(|m| m.price).unwrap_or(last_price);
+        let closing_profit = pct_change(buy_price, closing_price);
+        if closing_price.is_finite() && buy_price > 0.0 && closing_profit.is_finite() {
+            self.goldmine.record_sim_exit(&mint.mint.to_string(), buy_price, closing_price, closing_profit, highest_profit, &exit_reason).await?;
+            log!(cc::LIGHT_WHITE, "PAPER CLOSED | Mint: {:?} | Exit reason: {} | Gross P&L: {:.6}% | Peak: {:.6}%", mint.mint, exit_reason, closing_profit, highest_profit);
         }
         Ok(())
     }
