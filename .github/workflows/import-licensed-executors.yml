@@ -1,0 +1,38 @@
+name: Import licensed COPY and sniper donor engines
+on:
+  push:
+    paths:
+      - .github/workflows/import-licensed-executors.yml
+permissions:
+  contents: write
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Vendor original Mortdeus BSD-3 source
+        run: |
+          set -euo pipefail
+          git clone --quiet --filter=blob:none https://github.com/mortdeus/solana-copy-sniper-mev-trading-bot.git /tmp/mortdeus
+          git -C /tmp/mortdeus checkout --quiet --detach 5d92c31aa494e8e8b8004674267a9dd542fae5df
+          mkdir -p components/mortdeus-upstream
+          git -C /tmp/mortdeus archive HEAD | tar -xf - -C components/mortdeus-upstream
+          test -f components/mortdeus-upstream/LICENSE
+      - name: Vendor original D3AD Apache-2 execution source (omit committed Python venv)
+        run: |
+          set -euo pipefail
+          git clone --quiet --filter=blob:none --sparse https://github.com/D3AD-E/Solana-sniper-bot.git /tmp/d3ad
+          git -C /tmp/d3ad checkout --quiet --detach a91ca33695ff4eafadd14db7d139c6ec3000c89a
+          git -C /tmp/d3ad sparse-checkout set src shred-sniper rust-native scripts
+          mkdir -p components/d3ad-upstream
+          cp -a /tmp/d3ad/src /tmp/d3ad/shred-sniper /tmp/d3ad/rust-native /tmp/d3ad/scripts components/d3ad-upstream/
+          for f in LICENSE README.md ARCHITECTURE.md DEPLOY.md GOLIVE.md INFRA.md package.json package-lock.json index.ts environment.d.ts .gitignore; do
+            if [ -f /tmp/d3ad/"$f" ]; then cp /tmp/d3ad/"$f" components/d3ad-upstream/; fi
+          done
+          test -f components/d3ad-upstream/LICENSE
+          git add components/
+          git -c user.name='JINX licensed source import' -c user.email='jinx-import@users.noreply.github.com' commit -m 'Vendor licensed Mortdeus COPY and D3AD sniper engine sources'
+          git push origin HEAD:integrate-proven-wallet-copy-execution
