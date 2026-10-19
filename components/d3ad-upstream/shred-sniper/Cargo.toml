@@ -1,0 +1,59 @@
+[workspace]
+members = ["examples", "jito_protos", "proxy", "sniper"]
+resolver = "2"
+
+[workspace.package]
+version = "0.2.13"
+description = "Fast path to receive shreds from Jito, forwarding to local consumers. See https://docs.jito.wtf/lowlatencytxnfeed/ for details."
+authors = ["Jito Team <team@jito.wtf>"]
+homepage = "https://jito.wtf/"
+edition = "2021"
+
+[workspace.dependencies]
+ahash = "0.8"
+arc-swap = "1.6"
+bincode = "1.3.3"
+borsh = "1.5.3"
+clap = { version = "4", features = ["derive", "env"] }
+crossbeam-channel = "0.5.8"
+dashmap = "5"
+env_logger = "0.11"
+hostname = "0.4.0"
+itertools = "0.14.0"
+jito-protos = { path = "jito_protos" }
+log = "0.4"
+prost = "0.13"
+prost-types = "0.13"
+rand = "0.8"
+reqwest = { version = "0.12", features = ["blocking", "json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+signal-hook = "0.3"
+solana-client = "=2.2.1"
+solana-entry = "=2.2.1"
+# pinned by rev: the eric/v2.2-merkle-recovery branch was deleted upstream (2026-08, shredstream
+# sunset); the commit itself is still fetchable and is what Cargo.lock always resolved to.
+solana-ledger = { git = "https://github.com/jito-foundation/jito-solana.git", rev = "cafa3ba4d4c6c3702d13545d9b434861ebc06036" }
+solana-metrics = "=2.2.1"
+solana-net-utils = "=2.2.1"
+solana-perf = "=2.2.1"
+solana-sdk = "=2.2.1"
+solana-streamer = "=2.2.1"
+thiserror = "2"
+tokio = "1"
+tonic = { version = "0.13", features = ["tls-webpki-roots"] }
+tonic-build = "0.13"
+
+[profile.release]
+# This binary is latency critical and is built once per deployment, so every knob here is
+# traded the same way: longer build, faster code.
+#
+# * `fat` LTO plus a single codegen unit lets the hot path inline across crate boundaries --
+#   `Pubkey::create_program_address`, the curve25519 field ops and the shred layout accessors
+#   all live in other crates and are called from inside the detect loop.
+# * `abort` removes the unwinding landing pads from that loop. A panic already takes the
+#   whole process down: `main` installs a hook that sets `exit` and shuts everything off,
+#   because a proxy whose reconstructor thread has died is worse than one that restarts.
+lto = "fat"
+codegen-units = 1
+panic = "abort"
