@@ -1,0 +1,8 @@
+data/
+logs/
+*.pkl
+*.npy
+__pycache__/
+.venv/
+notebooks/executed_check.ipynb
+kaggle_dataset/
