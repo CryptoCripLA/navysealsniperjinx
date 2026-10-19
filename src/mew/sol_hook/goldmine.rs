@@ -262,6 +262,15 @@ impl Goldmine {
         sqlx::query(create_twitters).execute(pool).await?;
         sqlx::query(index_tokens).execute(pool).await?;
         sqlx::query(create_sims).execute(pool).await?;
+        sqlx::query(r#"CREATE TABLE IF NOT EXISTS sim_closed (
+            mint TEXT PRIMARY KEY,
+            buy_price DOUBLE PRECISION NOT NULL,
+            exit_price DOUBLE PRECISION NOT NULL,
+            gross_profit_pct DOUBLE PRECISION NOT NULL,
+            peak_profit_pct DOUBLE PRECISION NOT NULL,
+            exit_reason TEXT NOT NULL,
+            closed_at TIMESTAMPTZ NOT NULL DEFAULT now()
+        );"#).execute(pool).await?;
         Ok(())
     }
 
@@ -522,4 +531,11 @@ impl Goldmine {
         let rows = sqlx::query_as::<_, Sim>(sql).fetch_all(self.db()?).await?;
         Ok(rows)
     }
+    pub async fn record_sim_exit(&self, mint: &str, buy_price: f64, exit_price: f64, gross_profit_pct: f64, peak_profit_pct: f64, reason: &str) -> anyhow::Result<()> {
+        sqlx::query("INSERT INTO sim_closed (mint, buy_price, exit_price, gross_profit_pct, peak_profit_pct, exit_reason) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (mint) DO NOTHING")
+            .bind(mint).bind(buy_price).bind(exit_price).bind(gross_profit_pct).bind(peak_profit_pct).bind(reason)
+            .execute(self.db()?).await?;
+        Ok(())
+    }
+
 }
