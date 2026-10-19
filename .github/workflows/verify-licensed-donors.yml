@@ -1,0 +1,31 @@
+name: Verify original licensed donor modules
+on:
+  push:
+    paths:
+      - .github/workflows/verify-licensed-donors.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  d3ad-seller-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: components/d3ad-upstream
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --ignore-scripts --no-audit --no-fund
+      - run: npm test
+  mortdeus-copy-syntax:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate COPY source without connecting to market
+        run: |
+          cd 'components/mortdeus-upstream/2_copy trading bot(node) using gRPC'
+          for f in *.js services/*.js utils/*.js; do node --check "$f"; done
