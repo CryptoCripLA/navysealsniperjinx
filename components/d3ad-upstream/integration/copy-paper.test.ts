@@ -16,7 +16,7 @@ function pumpEvent(buy: boolean, solAmount: bigint): Buffer {
   b[64] = buy ? 1 : 0;
   LEADER.copy(b, 65);
   b.writeBigUInt64LE(35_000_000_000n, 105);
-  b.writeBigUInt64LE(1_000_000_000_000_000n, 113);
+  b.writeBigUInt64LE(1_000_000_000_000n, 113);
   return b;
 }
 describe('COPY event to single-position paper exit', () => {
@@ -30,7 +30,7 @@ describe('COPY event to single-position paper exit', () => {
     expect(sell?.user).toBe(buy?.user);
 
     let position = { mint: buy.mint, tokens: BigInt(buy.tokenchange), costLamports: BigInt(buy.solchange) };
-    const quotedExit = sellValue(70_000_000_000n, 1_000_000_000_000_000n, position.tokens);
+    const quotedExit = sellValue(70_000_000_000n, 1_000_000_000_000n, position.tokens);
     expect(quotedExit).toBeGreaterThan(position.costLamports);
     const grossPnlLamports = quotedExit - position.costLamports;
     position = { ...position, tokens: 0n };
