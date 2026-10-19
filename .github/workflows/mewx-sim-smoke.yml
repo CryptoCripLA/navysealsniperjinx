@@ -72,6 +72,10 @@ jobs:
           rc=$?
           sed -E 's/(PRIVATE_KEY|GRPC_TOKEN|RPC_URL):[^, ]+/\\1:[masked]/g' /tmp/mew-sim.log | tail -70
           echo "SIM_START_EXIT=$rc"
+          echo '--- COMPLETED SIMULATED TRADES ---'
+          PGPASSWORD=test_only psql -h localhost -U postgres -d goldmine -c 'SELECT mint, ROUND(gross_profit_pct::numeric, 3) AS gross_pct, ROUND(peak_profit_pct::numeric, 3) AS peak_pct, exit_reason FROM sim_closed ORDER BY closed_at DESC;' || true
+          echo '--- CLOSED TRADE COUNT ---'
+          PGPASSWORD=test_only psql -h localhost -U postgres -d goldmine -tAc 'SELECT count(*) FROM sim_closed;' || true
           PGPASSWORD=test_only psql -h localhost -U postgres -d goldmine -c 'SELECT COUNT(*) AS simulated_positions, COALESCE(MAX(highest_profit),0) AS max_reported_peak_pct FROM sims;' || true
           PGPASSWORD=test_only psql -h localhost -U postgres -d goldmine -c 'SELECT mint, profit, highest_profit, created_at FROM sims ORDER BY created_at DESC LIMIT 10;' || true
           if grep -E -q 'thread.*panicked|panicked at|invalid / not set' /tmp/mew-sim.log; then exit 1; fi
