@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - .github/workflows/verify-licensed-donors.yml
+      - components/d3ad-upstream/integration/copy-paper.test.ts
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,6 +20,8 @@ jobs:
         with:
           node-version: '20'
       - run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Make installed bs58 dependency available to imported COPY parser
+        run: ln -s "$(pwd)/node_modules" '../mortdeus-upstream/2_copy trading bot(node) using gRPC/node_modules'
       - run: npm test
   mortdeus-copy-syntax:
     runs-on: ubuntu-latest
