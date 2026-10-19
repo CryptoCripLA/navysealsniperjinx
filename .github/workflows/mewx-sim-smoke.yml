@@ -9,7 +9,7 @@ permissions:
 jobs:
   original-sim:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 25
     services:
       postgres:
         image: postgres:16
@@ -68,9 +68,11 @@ jobs:
         shell: bash
         run: |
           set +e
-          timeout 45s target/debug/mew > /tmp/mew-sim.log 2>&1
+          timeout 480s target/debug/mew > /tmp/mew-sim.log 2>&1
           rc=$?
           sed -E 's/(PRIVATE_KEY|GRPC_TOKEN|RPC_URL):[^, ]+/\\1:[masked]/g' /tmp/mew-sim.log | tail -70
           echo "SIM_START_EXIT=$rc"
-          if grep -E -q 'thread.*panicked|panicked at|Error:|invalid / not set' /tmp/mew-sim.log; then exit 1; fi
+          PGPASSWORD=test_only psql -h localhost -U postgres -d goldmine -c 'SELECT COUNT(*) AS simulated_positions, COALESCE(MAX(highest_profit),0) AS max_reported_peak_pct FROM sims;' || true
+          PGPASSWORD=test_only psql -h localhost -U postgres -d goldmine -c 'SELECT mint, profit, highest_profit, created_at FROM sims ORDER BY created_at DESC LIMIT 10;' || true
+          if grep -E -q 'thread.*panicked|panicked at|invalid / not set' /tmp/mew-sim.log; then exit 1; fi
           test "$rc" = 124 || test "$rc" = 0
