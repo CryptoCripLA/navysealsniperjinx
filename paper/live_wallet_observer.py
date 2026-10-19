@@ -35,7 +35,7 @@ def events(tx, wallet, sig):
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--wallet",default="5brv79eFZ2rGprXNvqgVJBkBptkkw8GJX1XydJyZLyAr")
-    ap.add_argument("--rpc",default=os.environ.get("SOLANA_RPC_URL","https://api.mainnet-beta.solana.com"))
+    ap.add_argument("--rpc",default=os.environ.get("SOLANA_RPC_URL") or "https://api.mainnet-beta.solana.com")
     ap.add_argument("--seconds",type=int,default=180)
     ap.add_argument("--poll",type=int,default=15)
     ap.add_argument("--out",default="paper-observations.jsonl")
