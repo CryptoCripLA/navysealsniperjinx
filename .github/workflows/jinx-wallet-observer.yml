@@ -1,0 +1,31 @@
+name: JINX read-only live wallet observation
+on:
+  push:
+    paths:
+      - paper/live_wallet_observer.py
+      - .github/workflows/jinx-wallet-observer.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate observer syntax
+        run: python -m py_compile paper/live_wallet_observer.py
+      - name: Observe original 833k wallet on actual Solana blocks (read only)
+        env:
+          SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
+        run: |
+          python paper/live_wallet_observer.py --seconds 120 --poll 15 --out paper-observations.jsonl
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: observed-wallet-events
+          path: paper-observations.jsonl
+          if-no-files-found: ignore
