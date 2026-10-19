@@ -472,7 +472,7 @@ impl SolHook {
         match resp.await {
             Ok(data) => {
                 let data: serde_json::Value = data.json().await?;
-                let sol_price = data["solana"]["usd"].as_f64().unwrap();
+                let sol_price = data["solana"]["usd"].as_f64().ok_or_else(|| anyhow::anyhow!("SOL/USD price missing from CoinGecko response"))?;
                 Ok(sol_price)
             }
             Err(e) => {
