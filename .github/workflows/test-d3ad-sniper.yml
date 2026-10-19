@@ -1,0 +1,26 @@
+name: Test D3AD original Rust sniper
+on:
+  push:
+    paths:
+      - .github/workflows/test-d3ad-sniper.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sniper-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: components/d3ad-upstream/shred-sniper
+      - name: Install native and protobuf build requirements
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq protobuf-compiler libssl-dev pkg-config libudev-dev
+      - name: Run original Rust sniper tests
+        working-directory: components/d3ad-upstream/shred-sniper
+        env:
+          CARGO_BUILD_JOBS: '2'
+          CARGO_INCREMENTAL: '0'
+        run: cargo test -p sniper --locked
