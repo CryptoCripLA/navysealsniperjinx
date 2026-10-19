@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - .github/workflows/verify-licensed-donors.yml
-      - components/d3ad-upstream/integration/copy-paper.test.ts
+      - 'components/d3ad-upstream/integration/**'
   workflow_dispatch:
 permissions:
   contents: read
